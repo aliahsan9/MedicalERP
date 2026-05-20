@@ -12,14 +12,33 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region SERVICES
+#region CONTROLLERS + BASIC SERVICES
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 #endregion
 
-#region SWAGGER + JWT AUTH BUTTON SETUP
+#region CORS CONFIGURATION ✅ (IMPORTANT FIX)
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:4200",   // Angular dev
+                "https://localhost:4200"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // important if using JWT cookies or auth headers
+    });
+});
+
+#endregion
+
+#region SWAGGER + JWT AUTH
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -29,7 +48,6 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    // 🔐 JWT AUTH BUTTON IN SWAGGER UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -83,27 +101,18 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole(Roles.Admin));
-
-    options.AddPolicy("DoctorOnly", policy =>
-        policy.RequireRole(Roles.Doctor));
-
-    options.AddPolicy("UserOnly", policy =>
-        policy.RequireRole(Roles.User));
+    options.AddPolicy("AdminOnly", p => p.RequireRole(Roles.Admin));
+    options.AddPolicy("DoctorOnly", p => p.RequireRole(Roles.Doctor));
+    options.AddPolicy("UserOnly", p => p.RequireRole(Roles.User));
 });
 
 #endregion
 
-#region JWT AUTH SETUP
+#region JWT AUTH
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -131,7 +140,7 @@ var app = builder.Build();
 
 #endregion
 
-#region PIPELINE
+#region PIPELINE (ORDER IS VERY IMPORTANT ⚠️)
 
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -142,6 +151,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngularApp"); // ✅ MUST BE BEFORE AUTH
 
 app.UseAuthentication();
 app.UseAuthorization();
