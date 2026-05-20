@@ -16,16 +16,54 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var result = await _authService.RegisterAsync(request);
-        return Ok(result);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var result = await _authService.RegisterAsync(request);
+            return Ok(new
+            {
+                success = true,
+                message = "User registered successfully",
+                data = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var result = await _authService.LoginAsync(request);
-        return Ok(result);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var result = await _authService.LoginAsync(request);
+            return Ok(new
+            {
+                success = true,
+                message = "Login successful",
+                data = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
     }
 }

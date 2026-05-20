@@ -1,5 +1,6 @@
 ﻿using MedicalERP.Application.DTOs.Auth;
 using MedicalERP.Application.Interfaces;
+using MedicalERP.Domain.Constants;
 using MedicalERP.Domain.Entities;
 using MedicalERP.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ public class AuthService : IAuthService
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash = HashPassword(request.Password),
-            Role = "User",
+            Role = Roles.User,
             CreatedAt = DateTime.UtcNow
         };
 

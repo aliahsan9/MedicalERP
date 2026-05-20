@@ -1,9 +1,11 @@
 using MedicalERP.Application.Interfaces;
+using MedicalERP.Domain.Constants;
 using MedicalERP.Infrastructure.Data;
 using MedicalERP.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +14,45 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+#endregion
+
+#region SWAGGER + JWT AUTH BUTTON SETUP
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "MedicalERP API",
+        Version = "v1"
+    });
+
+    // 🔐 JWT AUTH BUTTON IN SWAGGER UI
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT token like: Bearer {your token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 #endregion
 
@@ -31,6 +71,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole(Roles.Admin));
+
+    options.AddPolicy("DoctorOnly", policy =>
+        policy.RequireRole(Roles.Doctor));
+
+    options.AddPolicy("UserOnly", policy =>
+        policy.RequireRole(Roles.User));
+});
 
 #endregion
 
@@ -78,7 +132,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();   // IMPORTANT (MUST COME BEFORE AUTHORIZATION)
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
