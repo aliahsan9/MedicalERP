@@ -26,4 +26,6 @@ public class Product
     = new List<InventoryTransaction>();
     public ICollection<SaleItem> SaleItems { get; set; }
     = new List<SaleItem>();
+    public ICollection<PurchaseItem> PurchaseItems { get; set; }
+    = new List<PurchaseItem>();
 }
