@@ -24,4 +24,6 @@ public class Product
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public ICollection<InventoryTransaction> InventoryTransactions { get; set; }
     = new List<InventoryTransaction>();
+    public ICollection<SaleItem> SaleItems { get; set; }
+    = new List<SaleItem>();
 }

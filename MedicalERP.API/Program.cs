@@ -73,6 +73,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<ISaleService, SaleService>();
 
 builder.Services.AddAuthorization(options =>
 {
