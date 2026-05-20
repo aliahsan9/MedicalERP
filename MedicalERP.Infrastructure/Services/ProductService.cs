@@ -9,10 +9,12 @@ namespace MedicalERP.Infrastructure.Services;
 public class ProductService : IProductService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public ProductService(ApplicationDbContext context)
+    public ProductService(ApplicationDbContext context, IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<ProductDto> CreateAsync(CreateProductRequest request)
@@ -32,29 +34,30 @@ public class ProductService : IProductService
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 
+        await _auditService.LogAsync(
+            "SYSTEM",
+            "PRODUCT_CREATED",
+            "Product",
+            product.Id.ToString(),
+            newValues: product
+        );
+
         return Map(product);
-    }
-
-    public async Task<List<ProductDto>> GetAllAsync()
-    {
-        return await _context.Products
-            .Select(p => Map(p))
-            .ToListAsync();
-    }
-
-    public async Task<ProductDto?> GetByIdAsync(Guid id)
-    {
-        var product = await _context.Products.FindAsync(id);
-
-        return product == null ? null : Map(product);
     }
 
     public async Task<ProductDto> UpdateAsync(Guid id, UpdateProductRequest request)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
         if (product == null)
             throw new Exception("Product not found");
+
+        var old = new
+        {
+            product.Name,
+            product.Price,
+            product.StockQuantity
+        };
 
         product.Name = request.Name;
         product.Category = request.Category;
@@ -67,12 +70,21 @@ public class ProductService : IProductService
 
         await _context.SaveChangesAsync();
 
+        await _auditService.LogAsync(
+            "SYSTEM",
+            "PRODUCT_UPDATED",
+            "Product",
+            product.Id.ToString(),
+            oldValues: old,
+            newValues: product
+        );
+
         return Map(product);
     }
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
         if (product == null)
             return false;
@@ -80,22 +92,40 @@ public class ProductService : IProductService
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
 
+        await _auditService.LogAsync(
+            "SYSTEM",
+            "PRODUCT_DELETED",
+            "Product",
+            id.ToString(),
+            oldValues: product
+        );
+
         return true;
     }
 
-    private static ProductDto Map(Product p)
+    public async Task<List<ProductDto>> GetAllAsync()
     {
-        return new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Category = p.Category,
-            Price = p.Price,
-            CostPrice = p.CostPrice,
-            StockQuantity = p.StockQuantity,
-            ExpiryDate = p.ExpiryDate,
-            Barcode = p.Barcode,
-            IsActive = p.IsActive
-        };
+        return await _context.Products
+            .Select(p => Map(p))
+            .ToListAsync();
     }
+
+    public async Task<ProductDto?> GetByIdAsync(Guid id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        return product == null ? null : Map(product);
+    }
+
+    private static ProductDto Map(Product p) => new()
+    {
+        Id = p.Id,
+        Name = p.Name,
+        Category = p.Category,
+        Price = p.Price,
+        CostPrice = p.CostPrice,
+        StockQuantity = p.StockQuantity,
+        ExpiryDate = p.ExpiryDate,
+        Barcode = p.Barcode,
+        IsActive = p.IsActive
+    };
 }

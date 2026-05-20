@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Purchase> Purchases => Set<Purchase>();
 
     public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

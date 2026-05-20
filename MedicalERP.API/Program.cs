@@ -1,3 +1,4 @@
+using MedicalERP.API.Middleware;
 using MedicalERP.Application.Interfaces;
 using MedicalERP.Domain.Constants;
 using MedicalERP.Infrastructure.Data;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,6 +78,8 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -121,11 +125,15 @@ builder.Services.AddAuthentication(options =>
 
 #region BUILD APP
 
+QuestPDF.Settings.License = LicenseType.Community;
+
 var app = builder.Build();
 
 #endregion
 
 #region PIPELINE
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

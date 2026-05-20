@@ -10,78 +10,110 @@ namespace MedicalERP.Infrastructure.Services;
 public class SaleService : ISaleService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public SaleService(ApplicationDbContext context)
+    public SaleService(
+        ApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<SaleDto> CreateSaleAsync(CreateSaleRequest request)
     {
-        var sale = new Sale
+        if (request.Items == null || !request.Items.Any())
+            throw new Exception("Sale must contain at least one item");
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
         {
-            Id = Guid.NewGuid(),
-            InvoiceNumber = GenerateInvoiceNumber()
-        };
-
-        decimal totalAmount = 0;
-
-        foreach (var item in request.Items)
-        {
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == item.ProductId);
-
-            if (product == null)
-                throw new Exception("Product not found");
-
-            if (product.StockQuantity < item.Quantity)
-                throw new Exception(
-                    $"Insufficient stock for {product.Name}");
-
-            // REDUCE STOCK
-            product.StockQuantity -= item.Quantity;
-
-            // INVENTORY TRANSACTION
-            var inventoryTransaction = new InventoryTransaction
+            var sale = new Sale
             {
                 Id = Guid.NewGuid(),
-                ProductId = product.Id,
-                Type = InventoryTransactionType.StockOut,
-                Quantity = item.Quantity,
-                Notes = $"Sale Invoice: {sale.InvoiceNumber}"
+                InvoiceNumber = GenerateInvoiceNumber(),
+                CustomerName = string.IsNullOrWhiteSpace(request.CustomerName)
+                    ? "Walk-In Customer"
+                    : request.CustomerName,
+                CreatedAt = DateTime.UtcNow,
+                Items = new List<SaleItem>()
             };
 
-            _context.InventoryTransactions.Add(
-                inventoryTransaction);
+            decimal total = 0;
 
-            var totalPrice = product.Price * item.Quantity;
-
-            var saleItem = new SaleItem
+            foreach (var item in request.Items)
             {
-                Id = Guid.NewGuid(),
-                ProductId = product.Id,
-                Quantity = item.Quantity,
-                UnitPrice = product.Price,
-                TotalPrice = totalPrice
-            };
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(x => x.Id == item.ProductId);
 
-            totalAmount += totalPrice;
+                if (product == null)
+                    throw new Exception("Product not found");
 
-            sale.Items.Add(saleItem);
+                if (product.StockQuantity < item.Quantity)
+                    throw new Exception($"Insufficient stock for {product.Name}");
+
+                product.StockQuantity -= item.Quantity;
+
+                var saleItem = new SaleItem
+                {
+                    Id = Guid.NewGuid(),
+                    ProductId = product.Id,
+                    Quantity = item.Quantity,
+                    UnitPrice = product.Price,
+                    TotalPrice = product.Price * item.Quantity
+                };
+
+                sale.Items.Add(saleItem);
+
+                _context.InventoryTransactions.Add(new InventoryTransaction
+                {
+                    Id = Guid.NewGuid(),
+                    ProductId = product.Id,
+                    Quantity = item.Quantity,
+                    Type = InventoryTransactionType.StockOut,
+                    Notes = $"Sale {sale.InvoiceNumber}"
+                });
+
+                total += saleItem.TotalPrice;
+            }
+
+            sale.TotalAmount = total;
+
+            _context.Sales.Add(sale);
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            // =========================
+            // AUDIT LOG
+            // =========================
+            await _auditService.LogAsync(
+                userId: "SYSTEM",
+                action: "SALE_CREATED",
+                entityName: "Sale",
+                entityId: sale.Id.ToString(),
+                newValues: new
+                {
+                    sale.InvoiceNumber,
+                    sale.TotalAmount,
+                    sale.CustomerName
+                }
+            );
+
+            return await GetSaleByIdInternalAsync(sale.Id);
         }
-
-        sale.TotalAmount = totalAmount;
-
-        _context.Sales.Add(sale);
-
-        await _context.SaveChangesAsync();
-
-        return await GetSaleDto(sale.Id);
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<List<SaleDto>> GetAllAsync()
     {
         return await _context.Sales
+            .AsNoTracking()
             .Include(x => x.Items)
             .ThenInclude(x => x.Product)
             .OrderByDescending(x => x.CreatedAt)
@@ -89,9 +121,9 @@ public class SaleService : ISaleService
             {
                 Id = x.Id,
                 InvoiceNumber = x.InvoiceNumber,
+                CustomerName = x.CustomerName,
                 TotalAmount = x.TotalAmount,
                 CreatedAt = x.CreatedAt,
-
                 Items = x.Items.Select(i => new SaleItemDto
                 {
                     ProductName = i.Product.Name,
@@ -105,23 +137,26 @@ public class SaleService : ISaleService
 
     public async Task<SaleDto?> GetByIdAsync(Guid id)
     {
-        return await GetSaleDto(id);
+        return await GetSaleByIdInternalAsync(id);
     }
 
-    private async Task<SaleDto> GetSaleDto(Guid saleId)
+    private async Task<SaleDto> GetSaleByIdInternalAsync(Guid id)
     {
         var sale = await _context.Sales
             .Include(x => x.Items)
             .ThenInclude(x => x.Product)
-            .FirstAsync(x => x.Id == saleId);
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (sale == null)
+            throw new Exception("Sale not found");
 
         return new SaleDto
         {
             Id = sale.Id,
             InvoiceNumber = sale.InvoiceNumber,
+            CustomerName = sale.CustomerName,
             TotalAmount = sale.TotalAmount,
             CreatedAt = sale.CreatedAt,
-
             Items = sale.Items.Select(i => new SaleItemDto
             {
                 ProductName = i.Product.Name,
@@ -133,7 +168,5 @@ public class SaleService : ISaleService
     }
 
     private string GenerateInvoiceNumber()
-    {
-        return $"INV-{DateTime.UtcNow:yyyyMMddHHmmss}";
-    }
+        => $"INV-{DateTime.UtcNow:yyyyMMddHHmmssfff}";
 }

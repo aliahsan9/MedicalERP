@@ -10,26 +10,27 @@ namespace MedicalERP.Infrastructure.Services;
 public class InventoryService : IInventoryService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public InventoryService(ApplicationDbContext context)
+    public InventoryService(
+        ApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
-    public async Task<InventoryTransactionDto> CreateTransactionAsync(
-        CreateInventoryTransactionRequest request)
+    public async Task<InventoryTransactionDto> CreateTransactionAsync(CreateInventoryTransactionRequest request)
     {
-        var product = await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == request.ProductId);
+        var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == request.ProductId);
 
         if (product == null)
             throw new Exception("Product not found");
 
-        // STOCK LOGIC
+        var oldStock = product.StockQuantity;
+
         if (request.Type == InventoryTransactionType.StockIn)
-        {
             product.StockQuantity += request.Quantity;
-        }
         else
         {
             if (product.StockQuantity < request.Quantity)
@@ -50,6 +51,19 @@ public class InventoryService : IInventoryService
         _context.InventoryTransactions.Add(transaction);
 
         await _context.SaveChangesAsync();
+
+        await _auditService.LogAsync(
+            "SYSTEM",
+            request.Type.ToString(),
+            "Inventory",
+            product.Id.ToString(),
+            newValues: new
+            {
+                OldStock = oldStock,
+                NewStock = product.StockQuantity,
+                request.Quantity
+            }
+        );
 
         return new InventoryTransactionDto
         {
