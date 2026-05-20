@@ -15,7 +15,7 @@ public class Product
 
     public int StockQuantity { get; set; }
 
-    public DateTime? ExpiryDate { get; set; }
+    public DateTime ExpiryDate { get; set; } = DateTime.UtcNow;
 
     public string? Barcode { get; set; }
 

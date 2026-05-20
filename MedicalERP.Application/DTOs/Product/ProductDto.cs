@@ -8,7 +8,7 @@ public class ProductDto
     public decimal Price { get; set; }
     public decimal CostPrice { get; set; }
     public int StockQuantity { get; set; }
-    public DateTime? ExpiryDate { get; set; }
+    public DateTime ExpiryDate { get; set; } = DateTime.UtcNow;
     public string? Barcode { get; set; }
     public bool IsActive { get; set; }
 }
