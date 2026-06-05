@@ -7,7 +7,7 @@ namespace MedicalERP.API.Controllers;
 
 [ApiController]
 [Route("api/products")]
-[Authorize(Policy = "AdminOnly")] // ONLY ADMIN CAN MANAGE PRODUCTS
+[Authorize(Policy = "AdminOnly")] 
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
