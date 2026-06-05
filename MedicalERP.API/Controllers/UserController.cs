@@ -7,7 +7,7 @@ namespace MedicalERP.API.Controllers;
 
 [ApiController]
 [Route("api/users")]
-[Authorize] // IMPORTANT: only logged-in users
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
