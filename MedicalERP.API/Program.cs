@@ -19,7 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 #endregion
 
-#region CORS CONFIGURATION ✅ (IMPORTANT FIX)
+#region CORS CONFIGURATION 
 
 builder.Services.AddCors(options =>
 {
