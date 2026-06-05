@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials(); // important if using JWT cookies or auth headers
+            .AllowCredentials(); 
     });
 });
 
