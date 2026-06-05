@@ -152,7 +152,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAngularApp"); // ✅ MUST BE BEFORE AUTH
+app.UseCors("AllowAngularApp"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
