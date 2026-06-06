@@ -14,22 +14,6 @@ The system is built with scalability, security, and maintainability in mind, all
 
 ## ✨ Features
 
-### Doctor Management
-
-* Doctor profile management
-* Specialization management
-* Schedule management
-* Availability tracking
-* Doctor-patient assignment
-
-### Appointment Management
-
-* Appointment booking
-* Appointment rescheduling
-* Appointment cancellation
-* Status tracking
-* Appointment history
-
 ### Prescription Management
 
 * Prescription creation
