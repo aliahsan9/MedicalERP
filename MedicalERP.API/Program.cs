@@ -8,9 +8,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuestPDF.Infrastructure;
+using Serilog;
 using System.Text;
 
+#region SERILOG LOGGING
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(
+        new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json")
+        .Build())
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
+#endregion
 
 #region CONTROLLERS + BASIC SERVICES
 
@@ -19,7 +33,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 #endregion
 
-#region CORS CONFIGURATION ✅ (IMPORTANT FIX)
+#region CORS CONFIGURATION 
 
 builder.Services.AddCors(options =>
 {
@@ -27,12 +41,12 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:4200",   // Angular dev
+                "http://localhost:4200",   
                 "https://localhost:4200"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials(); // important if using JWT cookies or auth headers
+            .AllowCredentials(); 
     });
 });
 
@@ -152,7 +166,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAngularApp"); // ✅ MUST BE BEFORE AUTH
+app.UseCors("AllowAngularApp"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
