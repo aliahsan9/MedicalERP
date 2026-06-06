@@ -177,13 +177,8 @@ dotnet run
 The API will be available at:
 
 ```text
-https://localhost:5001
+https://localhost:7165
 ```
-
-or
-
-```text
-http://localhost:5000
 ```
 
 ---
