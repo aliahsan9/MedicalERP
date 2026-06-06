@@ -67,7 +67,6 @@ The application follows a clean and maintainable layered architecture:
 │   └── Filters
 │
 ├── Application Layer
-│   ├── Services
 │   ├── DTOs
 │   ├── Validators
 │   └── Interfaces
@@ -76,15 +75,18 @@ The application follows a clean and maintainable layered architecture:
 │   ├── Entities
 │   ├── Enums
 │   └── Business Rules
+│   └── Common
 │
 ├── Infrastructure Layer
-│   ├── Repositories
-│   ├── Database Context
+│   ├── Services 
+│   ├── Database Context 
 │   ├── External Services
 │   └── File Storage
 │
-└── Database
-    └── SQL Server
+└── UnitTests
+    └── Services
+    └── Validators
+    └── Helpers
 ```
 
 ---
