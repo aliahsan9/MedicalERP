@@ -119,30 +119,7 @@ The application follows a clean and maintainable layered architecture:
 
 ---
 
-## 📂 Project Structure
-
-```text
-MedicalERP.Backend
-│
-├── Controllers
-├── Services
-├── Repositories
-├── Models
-├── DTOs
-├── Interfaces
-├── Middleware
-├── Validators
-├── Migrations
-├── Configurations
-├── Helpers
-├── Extensions
-├── Common
-└── Program.cs
-```
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
