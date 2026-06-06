@@ -291,13 +291,13 @@ git push origin feature/new-feature
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Ali Ahsan**
 
@@ -311,7 +311,7 @@ Full-Stack Developer
 
 ---
 
-## ⭐ Support
+## Support
 
 If you find this project useful, please consider giving it a star on GitHub.
 
