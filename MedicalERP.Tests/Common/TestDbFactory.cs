@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MedicalERP.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace MedicalERP.Tests.Common
+namespace MedicalERP.Tests.Common;
+
+public static class TestDbFactory
 {
-    internal class TestDbFactory
+    public static ApplicationDbContext Create()
     {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        return new ApplicationDbContext(options);
     }
 }
