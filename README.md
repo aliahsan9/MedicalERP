@@ -188,7 +188,7 @@ https://localhost:7165
 Swagger documentation is automatically available after running the application.
 
 ```text
-https://localhost:5001/swagger
+https://localhost:7165/swagger
 ```
 
 Use Swagger UI to:
