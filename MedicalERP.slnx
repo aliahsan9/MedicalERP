@@ -3,4 +3,5 @@
   <Project Path="MedicalERP.Application/MedicalERP.Application.csproj" />
   <Project Path="MedicalERP.Domain/MedicalERP.Domain.csproj" />
   <Project Path="MedicalERP.Infrastructure/MedicalERP.Infrastructure.csproj" />
+  <Project Path="MedicalERP.Tests/MedicalERP.Tests.csproj" Id="c1ae4266-5e01-4a64-8a8c-8c97219972fa" />
 </Solution>
