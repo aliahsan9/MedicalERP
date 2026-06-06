@@ -1,10 +1,10 @@
-# 🏥 MedicalERP Backend
+# MedicalERP Backend
 
 A robust and scalable Enterprise Resource Planning (ERP) backend system designed specifically for healthcare organizations, hospitals, clinics, laboratories, and medical centers. This application provides centralized management of patients, appointments, doctors, billing, inventory, prescriptions, and administrative operations through secure REST APIs.
 
 ---
 
-## 📋 Overview
+## Overview
 
 MedicalERP Backend serves as the core API layer for the MedicalERP ecosystem. It handles business logic, data management, authentication, authorization, reporting, and integration between different healthcare modules.
 
@@ -12,7 +12,7 @@ The system is built with scalability, security, and maintainability in mind, all
 
 ---
 
-## ✨ Features
+## Features
 
 ### Prescription Management
 
@@ -56,7 +56,7 @@ The system is built with scalability, security, and maintainability in mind, all
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 The application follows a clean and maintainable layered architecture:
 
@@ -91,7 +91,7 @@ The application follows a clean and maintainable layered architecture:
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 
@@ -188,7 +188,7 @@ http://localhost:5000
 
 ---
 
-## 📖 API Documentation
+## API Documentation
 
 Swagger documentation is automatically available after running the application.
 
@@ -205,7 +205,7 @@ Use Swagger UI to:
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 The application uses JWT authentication.
 
@@ -225,7 +225,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run all tests:
 
@@ -241,7 +241,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ---
 
-## 📈 Future Enhancements
+## Future Enhancements
 
 * Multi-Hospital Support
 * Laboratory Management
@@ -256,7 +256,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
 * JWT Authentication
 * Password Hashing
@@ -269,7 +269,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome.
 
