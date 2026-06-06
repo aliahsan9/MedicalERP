@@ -321,7 +321,7 @@ Full-Stack Developer
 If you find this project useful, please consider giving it a star on GitHub.
 
 ```bash
-⭐ Star the repository
-🍴 Fork the project
-🚀 Contribute improvements
+ Star the repository
+ Fork the project
+ Contribute improvements
 ```
