@@ -14,14 +14,6 @@ The system is built with scalability, security, and maintainability in mind, all
 
 ## ✨ Features
 
-### Patient Management
-
-* Patient registration and profile management
-* Medical history tracking
-* Patient search and filtering
-* Emergency contact management
-* Patient document management
-
 ### Doctor Management
 
 * Doctor profile management
