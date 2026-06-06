@@ -9,10 +9,12 @@ namespace MedicalERP.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
+        _logger = logger;
     }
 
     [HttpPost("register")]
@@ -24,6 +26,7 @@ public class AuthController : ControllerBase
         try
         {
             var result = await _authService.RegisterAsync(request);
+            _logger.LogInformation("User registered successfully");
             return Ok(new
             {
                 success = true,
@@ -33,6 +36,7 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error occurred while registering user");
             return BadRequest(new
             {
                 success = false,
