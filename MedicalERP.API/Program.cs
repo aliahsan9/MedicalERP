@@ -20,7 +20,11 @@ Log.Logger = new LoggerConfiguration()
         .Build())
     .CreateLogger();
 
-var builder = WebApplication.CreateBuilder(args);
+try
+{
+    Log.Information("MedicalERP API Starting");
+
+    var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
 
@@ -150,7 +154,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 QuestPDF.Settings.License = LicenseType.Community;
 
-var app = builder.Build();
+    builder.Host.UseSerilog();
+
+    var app = builder.Build();
 
 #endregion
 
@@ -164,7 +170,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+ app.UseSerilogRequestLogging();
+ app.UseHttpsRedirection();
 
 app.UseCors("AllowAngularApp"); 
 
@@ -176,3 +183,13 @@ app.MapControllers();
 #endregion
 
 app.Run();
+
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application Failed To Start");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
