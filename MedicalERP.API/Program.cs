@@ -170,7 +170,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+ app.UseSerilogRequestLogging();
+ app.UseHttpsRedirection();
 
 app.UseCors("AllowAngularApp"); 
 
