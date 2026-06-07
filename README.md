@@ -1,154 +1,69 @@
 # MedicalERP Backend
 
-A robust and scalable Enterprise Resource Planning (ERP) backend system designed specifically for healthcare organizations, hospitals, clinics, laboratories, and medical centers. This application provides centralized management of patients, appointments, doctors, billing, inventory, prescriptions, and administrative operations through secure REST APIs.
-
----
-
-## Overview
-
-MedicalERP Backend serves as the core API layer for the MedicalERP ecosystem. It handles business logic, data management, authentication, authorization, reporting, and integration between different healthcare modules.
-
-The system is built with scalability, security, and maintainability in mind, allowing healthcare institutions to streamline their daily operations while maintaining compliance with modern software development standards.
-
----
+MedicalERP Backend is a healthcare management system built with ASP.NET Core Web API and Clean Architecture principles. It provides a secure, scalable, and maintainable foundation for managing patients, appointments, prescriptions, billing, inventory, and administrative operations within hospitals, clinics, and medical organizations.
 
 ## Features
 
-### Prescription Management
+The system includes patient and appointment management, prescription handling, billing and invoicing, medicine inventory tracking, reporting, and role-based access control. Authentication is implemented using JWT, ensuring secure access to protected resources and administrative functions.
 
-* Prescription creation
-* Medication management
-* Treatment plans
-* Prescription history
-* Digital prescription records
+## Architecture
 
-### Billing & Invoicing
-
-* Invoice generation
-* Payment tracking
-* Outstanding balance management
-* Financial reporting
-* Revenue analytics
-
-### Inventory Management
-
-* Medicine inventory tracking
-* Stock monitoring
-* Low stock alerts
-* Supplier management
-* Purchase records
-
-### Authentication & Authorization
-
-* JWT Authentication
-* Role-Based Access Control (RBAC)
-* Secure password hashing
-* Refresh token support
-* Protected API endpoints
-
-### Reporting
-
-* Patient reports
-* Appointment reports
-* Revenue reports
-* Inventory reports
-* Administrative dashboards
-
----
-
-## System Architecture
-
-The application follows a clean and maintainable layered architecture:
+The project follows a layered architecture to promote separation of concerns and maintainability.
 
 ```text
-├── API Layer
+MedicalERP
+├── API
 │   ├── Controllers
 │   ├── Middleware
 │   └── Filters
 │
-├── Application Layer
+├── Application
 │   ├── DTOs
-│   ├── Validators
-│   └── Interfaces
+│   ├── Interfaces
+│   └── Validators
 │
-├── Domain Layer
+├── Domain
 │   ├── Entities
 │   ├── Enums
-│   └── Business Rules
 │   └── Common
 │
-├── Infrastructure Layer
-│   ├── Services 
-│   ├── Database Context 
-│   ├── External Services
-│   └── File Storage
+├── Infrastructure
+│   ├── Data
+│   ├── Services
+│   └── External Integrations
 │
-└── UnitTests
-    └── Services
-    └── Validators
-    └── Helpers
+└── Tests
 ```
-
----
 
 ## Technology Stack
 
-### Backend
-
-* ASP.NET Core Web API
+* ASP.NET Core 8 Web API
 * C#
 * Entity Framework Core
-
-### Database
-
 * SQL Server
-
-### Authentication
-
-* JWT Bearer Authentication
-
-### Documentation
-
+* JWT Authentication
 * Swagger / OpenAPI
-
-### Development Tools
-
-* Visual Studio
-* Git
-* GitHub
-
----
+* xUnit
 
 ## Getting Started
 
 ### Prerequisites
 
-Before running the project, make sure you have:
-
 * .NET 8 SDK
 * SQL Server
-* Visual Studio 2022
+* Visual Studio 2022 or VS Code
 * Git
 
----
+### Installation
 
-### Clone Repository
+Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/MedicalERP-Backend.git
-
-cd MedicalERP-Backend
+git clone https://github.com/your-username/MedicalERP.git
+cd MedicalERP
 ```
 
----
-
-### Configure Database
-
-Update your connection string in:
-
-```json
-appsettings.json
-```
+Configure the database connection in `appsettings.json`:
 
 ```json
 {
@@ -158,165 +73,56 @@ appsettings.json
 }
 ```
 
----
-
-### Apply Database Migrations
+Apply migrations:
 
 ```bash
 dotnet ef database update
 ```
 
----
-
-### Run Application
+Run the application:
 
 ```bash
 dotnet run
 ```
 
-The API will be available at:
+The API will be available locally at:
 
 ```text
 https://localhost:7165
 ```
-```
-
----
 
 ## API Documentation
 
-Swagger documentation is automatically available after running the application.
+Swagger is enabled by default and can be accessed after starting the application:
 
 ```text
 https://localhost:7165/swagger
 ```
 
-Use Swagger UI to:
-
-* Test endpoints
-* View request/response models
-* Authenticate using JWT tokens
-* Explore API contracts
-
----
-
-## Authentication
-
-The application uses JWT authentication.
-
-### Login Flow
-
-1. User submits credentials.
-2. Server validates user.
-3. JWT token is generated.
-4. Token is returned to client.
-5. Client sends token in Authorization header.
-
-Example:
-
-```http
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
----
+The documentation provides endpoint details, request/response schemas, and JWT authentication support for testing secured APIs.
 
 ## Testing
 
-Run all tests:
+Run the test suite with:
 
 ```bash
 dotnet test
 ```
 
-Generate test coverage:
+## Security
 
-```bash
-dotnet test --collect:"XPlat Code Coverage"
-```
-
----
-
-## Future Enhancements
-
-* Multi-Hospital Support
-* Laboratory Management
-* Radiology Module
-* Pharmacy Integration
-* Insurance Management
-* Telemedicine Support
-* SMS Notifications
-* Email Notifications
-* Mobile API Support
-* AI-Based Analytics
-
----
-
-## Security Features
-
-* JWT Authentication
-* Password Hashing
-* Role-Based Authorization
-* Input Validation
-* Exception Handling Middleware
-* Secure API Endpoints
-* SQL Injection Protection
-* Cross-Origin Resource Sharing (CORS)
-
----
+MedicalERP implements JWT authentication, role-based authorization, password hashing, request validation, centralized exception handling, and secure API practices to help protect application data and resources.
 
 ## Contributing
 
-Contributions are welcome.
-
-1. Fork the repository.
-2. Create a feature branch.
-
-```bash
-git checkout -b feature/new-feature
-```
-
-3. Commit changes.
-
-```bash
-git commit -m "Add new feature"
-```
-
-4. Push branch.
-
-```bash
-git push origin feature/new-feature
-```
-
-5. Create a Pull Request.
-
----
+Contributions are welcome. Feel free to submit issues, suggest improvements, or create pull requests.
 
 ## License
 
 This project is licensed under the MIT License.
 
----
-
 ## Author
 
-**Ali Ahsan**
+Ali Ahsan
 
-Full-Stack Developer
-
-* ASP.NET Core
-* C#
-* Angular
-* SQL Server
-* Azure
-
----
-
-## Support
-
-If you find this project useful, please consider giving it a star on GitHub.
-
-```bash
- Star the repository
- Fork the project
- Contribute improvements
-```
+Full-Stack Developer specializing in ASP.NET Core, Angular, SQL Server, and modern web application development.
